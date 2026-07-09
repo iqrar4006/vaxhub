@@ -22,7 +22,7 @@ const Navbar = () => {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" color="secondary">
         <Toolbar>
-          <Typography variant='h5' component="div" sx={{ flexGrow: 1 }}>VaxHub</Typography>
+          <Typography variant='h5' component="div" sx={{ flexGrow: 1 }}>EasyVisit</Typography>
 
           {isMatch ? (
             <DrawerComp />
@@ -127,7 +127,7 @@ export default Navbar;
 //     <Box sx={{ flexGrow: 1 }}>
 //       <AppBar position="static" color="secondary">
 //         <Toolbar>
-//           <Typography variant='h5' component="div" sx={{ flexGrow: 1 }}>VaxHub</Typography>
+//           <Typography variant='h5' component="div" sx={{ flexGrow: 1 }}>EasyVisit</Typography>
 
 //           <Button component={NavLink} to='/' style={({ isActive }) => { return { backgroundColor: isActive ? '#6d1b7b' : '' } }} sx={{ color: 'white', textTransform: 'none' }}>Home</Button>
 

@@ -32,8 +32,6 @@ function App() {
             <Route path="/dashboard/:id" element={access_token?is_patient?<DoctorPersonalPage />:<Navigate to='/profile'/>:<Navigate to='/login'/>} />
             <Route path="/doctordata" element={access_token?is_doctor?<DoctorData />:'':<Navigate to='/login'/>} />
             <Route path="/doctorreview/:id" element={access_token?is_doctor?<DoctorReview />:'':<Navigate to='/login'/>} />
-
-
             <Route path="/profile" element={access_token?<Profile />:<Navigate to='/login'/>} />
             <Route path="booking/:id" element={access_token?<Booking />:<Navigate to='/login'/>} />
           </Route>

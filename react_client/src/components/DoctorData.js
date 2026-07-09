@@ -7,7 +7,7 @@ import { getToken } from '../services/LocalStorageService';
 
 const DoctorData = () => {
     const { id,name,email } =useSelector(state=>state.user)
-    console.log(name,email)
+    // console.log(name,email)
     const { access_token } = getToken()
     const [server_error, setServerError] = useState({});
     const [doc_img,setDocImg]=useState('')

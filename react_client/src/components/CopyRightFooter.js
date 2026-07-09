@@ -8,7 +8,7 @@ const CopyRightFooter = () => {
             <Box sx={{ flexGrow: 1, my: 2 }}>
 
             <Typography variant="h6" sx={{textAlign: 'center','@media (min-width:600px)': {variant: 'subtitle1', },}}component="div" >
-                Copyright &copy; {new Date().getFullYear()} VaxHub All rights reserved
+                Copyright &copy; {new Date().getFullYear()} EasyVisit All rights reserved
             </Typography>
 
         </Box > 
