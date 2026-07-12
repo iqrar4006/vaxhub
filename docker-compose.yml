@@ -40,5 +40,16 @@ services:
              chmod -R 777 /app/node_modules &&
              npm start"
 
+  nginx:
+    build: ./nginx
+    container_name: nginx-container
+
+    ports:
+      - "80:80"
+
+    depends_on:
+      - backend
+      - frontend
+
 volumes:
   react_node_modules:
