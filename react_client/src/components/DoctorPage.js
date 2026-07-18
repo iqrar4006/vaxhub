@@ -5,7 +5,8 @@ import React from 'react'
 const DoctorPage = (props) => {
   // console.log('props',props)
   let navigate = useNavigate()
-  let im = `http://127.0.0.1:8000${props.info.doctor_image}`
+  // let im = `http://127.0.0.1:8000${props.info.doctor_image}`
+  let im = `http://localhost${props.info.doctor_image}`
   return (
     <>
       <CssBaseline />

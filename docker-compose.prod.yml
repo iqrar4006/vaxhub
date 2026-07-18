@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./django_server
+      dockerfile: Dockerfile.prod
+
+    container_name: django-prod
+
+    env_file:
+      - ./django_server/.env
+
+    command: >
+      sh -c "
+      python manage.py migrate &&
+      gunicorn --bind 0.0.0.0:8000 django_server.wsgi:application
+      "
+
+    expose:
+      - "8000"
+
+    restart: unless-stopped
+
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile.prod
+
+    container_name: nginx-prod
+
+    ports:
+      - "80:80"
+
+    depends_on:
+      - backend
+
+    restart: unless-stopped
