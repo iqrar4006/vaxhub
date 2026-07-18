@@ -47,7 +47,8 @@ const DoctorPersonalPage = () => {
     };
 
 
-    let im = `http://127.0.0.1:8000${arr['doctor_image']}`
+    // let im = `http://127.0.0.1:8000${arr['doctor_image']}`
+    let im = `http://localhost${arr['doctor_image']}`
 
     const handleClick = async (e) => {
         // e.preventDefault();

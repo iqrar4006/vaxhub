@@ -38,10 +38,26 @@ vaxhub/
 2. Create the required `.env` file inside `django_server`.
 3. Build the Docker images.
 
+```bash
+docker compose -f docker-compose.yml build
+```
+Force a fresh build:
+
+```bash
+docker compose -f docker-compose.yml build --no-cache
+```
 4. Start the project.
 
 ```bash
-docker compose up -d
+docker compose -f docker-compose.yml up -d
+```
+
+Verify containers are running:
+
+```bash
+docker ps
+```
+
 ```
 5. Open the applications.
 
@@ -60,13 +76,14 @@ http://localhost:8000
 # Stop Development
 
 ```bash
-docker compose down
+docker compose -f docker-compose.yml down
 ```
 or
 
 ```bash
-docker compose down -v
+docker compose -f docker-compose.yml down -v
 ```
+
 
 # After changes in table
 
