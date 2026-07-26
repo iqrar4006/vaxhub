@@ -44,7 +44,7 @@ setup.
                              |
                              |
                              v
-                           SQLite
+                           Postgresql
 ```
 
 ### Request Flow
