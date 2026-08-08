@@ -27,7 +27,8 @@ function App() {
             <Route path="contact" element={<Contact />} />
             <Route path="login" element={!access_token?<LoginReg />:<Navigate to='/profile'/>} />
             <Route path="sendpasswordresetemail" element={<SendPasswordResetEmail />} />
-            <Route path="api/user/reset/:id/:token" element={<ResetPassword />} />
+            {/* <Route path="api/user/reset/:id/:token" element={<ResetPassword />} /> */}
+            <Route path="reset/:id/:token" element={<ResetPassword />} />
             <Route path="/dashboard" element={access_token?is_patient?<Dashboard />:<Navigate to='/profile'/>:<Navigate to='/login'/>} />
             <Route path="/dashboard/:id" element={access_token?is_patient?<DoctorPersonalPage />:<Navigate to='/profile'/>:<Navigate to='/login'/>} />
             <Route path="/doctordata" element={access_token?is_doctor?<DoctorData />:'':<Navigate to='/login'/>} />

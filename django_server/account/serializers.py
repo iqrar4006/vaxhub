@@ -4,6 +4,7 @@ from django.utils.encoding import smart_str, force_bytes, DjangoUnicodeDecodeErr
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from account.utils import Util
+import time
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
   # We are writing this becoz we need confirm password field in our Registratin Request
@@ -100,8 +101,9 @@ class SendPasswordResetEmailSerializer(serializers.Serializer):
       # print('Encoded UID', uid)
       token = PasswordResetTokenGenerator().make_token(user)
       # print('Password Reset Token', token)
-      link = 'http://localhost:3000/api/user/reset/'+uid+'/'+token
-      print('Password Reset Link', link)
+      # link = 'http://localhost:3000/api/user/reset/'+uid+'/'+token
+      link = 'http://localhost/reset/'+uid+'/'+token
+      print('Password Reset Link', link,flush=True)
       # Send EMail
       body = 'Click Following Link to Reset Your Password '+link
       data = {
@@ -110,7 +112,16 @@ class SendPasswordResetEmailSerializer(serializers.Serializer):
         'from_email':'iqrartesting@gmail.com',
         'recipient_list':[user.email]
       }
+      
+      start_time = time.perf_counter()
+      print("EMAIL: Sending password reset email...",flush=True)
       Util.send_email(data)
+      end_time = time.perf_counter()
+      elapsed_time = end_time - start_time
+      print(
+          f"EMAIL: Password reset email sent in "
+          f"{elapsed_time:.3f} seconds",flush=True)
+
       return attrs
     else:
       raise serializers.ValidationError('You are not a Registered User')
