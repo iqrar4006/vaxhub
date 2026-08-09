@@ -4,6 +4,7 @@ from django.utils.encoding import smart_str, force_bytes, DjangoUnicodeDecodeErr
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from account.utils import Util
+from .tasks import send_password_reset_email
 import time
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -115,7 +116,13 @@ class SendPasswordResetEmailSerializer(serializers.Serializer):
       
       start_time = time.perf_counter()
       print("EMAIL: Sending password reset email...",flush=True)
-      Util.send_email(data)
+      # Util.send_email(data)
+      send_password_reset_email.delay(
+        data['subject'],
+        data['message'],
+        data['from_email'],
+        data['recipient_list']
+      )
       end_time = time.perf_counter()
       elapsed_time = end_time - start_time
       print(

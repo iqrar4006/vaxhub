@@ -175,6 +175,11 @@ SIMPLE_JWT = {
 
 PASSWORD_RESET_TIMEOUT=900          # 900 Sec = 15 Min
 
+
+#celery
+
+CELERY_BROKER_URL = 'redis://redis:6379/0'
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
