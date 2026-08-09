@@ -27,6 +27,7 @@ services:
 
     depends_on:
       - db
+      - redis
 
   db:
     image: postgres:17
@@ -60,6 +61,38 @@ services:
 
     restart: unless-stopped
 
+  redis:
+    image: redis:7-alpine
+
+    container_name: redis-container
+
+    expose:
+      - "6379"
+
+    volumes:
+      - redis_data:/data
+
+    restart: unless-stopped
+
+  celery_worker:
+    build:
+      context: ./django_server
+      dockerfile: Dockerfile.prod
+
+    container_name: celery-worker
+
+    env_file:
+      - ./django_server/.env
+
+    command: celery -A django_server worker --loglevel=info
+
+    depends_on:
+      - backend
+      - redis
+
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   media_data:
+  redis_data:
