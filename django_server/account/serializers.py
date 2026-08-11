@@ -115,7 +115,7 @@ class SendPasswordResetEmailSerializer(serializers.Serializer):
       }
       
       start_time = time.perf_counter()
-      print("EMAIL: Sending password reset email...",flush=True)
+      
       # Util.send_email(data)
       send_password_reset_email.delay(
         data['subject'],
@@ -126,7 +126,7 @@ class SendPasswordResetEmailSerializer(serializers.Serializer):
       end_time = time.perf_counter()
       elapsed_time = end_time - start_time
       print(
-          f"EMAIL: Password reset email sent in "
+          f"EMAIL: Password reset email sent in message broker "
           f"{elapsed_time:.3f} seconds",flush=True)
 
       return attrs
