@@ -5,6 +5,8 @@ import {useLoginUserMutation} from '../../services/userAuthApi';
 import { getToken, storeToken } from '../../services/LocalStorageService';
 import { useDispatch } from 'react-redux';
 import { setUserToken } from '../../features/authSlice';
+import { setUserInfo } from '../../features/userSlice';
+
 const UserLogin = () => {
 
   const [server_error,setServerError] = useState({});
@@ -28,13 +30,15 @@ const UserLogin = () => {
       storeToken(res.data.token)
       let {access_token}=getToken();
       dispatch(setUserToken({access_token:access_token}))
-      navigate('/profile')
+      dispatch(setUserInfo({id: res.data.id, email: res.data.email, name: res.data.name, is_patient: res.data.is_patient, is_doctor: res.data.is_doctor,}))
+      // navigate('/profile')
+      if (res.data.is_patient) {
+        navigate('/dashboard')
+      } else if (res.data.is_doctor) {
+        navigate(`/booking/${res.data.id}`)
+      }
     }
   }
-  let {access_token}=getToken();
-  useEffect(()=>{
-    dispatch(setUserToken({access_token:access_token}))
-  },[access_token,dispatch])
 
   return <>
     <Box component='form' noValidate sx={{ mt: 1 }} id='login-form' onSubmit={handleSubmit}>

@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { useSendPasswordResetEmailMutation } from "../../services/userAuthApi";
 const SendPasswordResetEmail = () => {
 
-  
   const [server_error,setServerError] =useState({})
   const [server_msg,setServerMsg] =useState({})
   const [sendPasswordResetEmail, { isLoading }]= useSendPasswordResetEmailMutation()

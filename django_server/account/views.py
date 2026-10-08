@@ -8,7 +8,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from account.models import User,Doctor,DoctorPatientAppointment,Review
 from django.db.models import Q
-
+from account.pagination import StandardResultsSetPagination
 
 
 # Generate Token Manually
@@ -26,9 +26,7 @@ class UserRegistrationView(APIView):
     serializer.is_valid(raise_exception=True)
     user = serializer.save()
     token = get_tokens_for_user(user)
-    is_patient=user.is_patient
-    is_doctor=user.is_doctor
-    return Response({'token':token, 'msg':'Registration Successful','is_patient':is_patient,'is_doctor':is_doctor}, status=status.HTTP_201_CREATED)
+    return Response({'token':token, 'msg':'Registration Successful','id':user.id,'email':user.email,'name':user.name,'is_patient':user.is_patient,'is_doctor':user.is_doctor}, status=status.HTTP_201_CREATED)
 
 class UserLoginView(APIView):
   renderer_classes = [UserRenderer]
@@ -40,12 +38,9 @@ class UserLoginView(APIView):
     user = authenticate(email=email, password=password)
     if user is not None:
       token = get_tokens_for_user(user)
-      is_patient=user.is_patient
-      is_doctor=user.is_doctor
-      return Response({'token':token, 'msg':'Login Success','is_patient':is_patient,'is_doctor':is_doctor}, status=status.HTTP_200_OK)
+      return Response({'token':token, 'msg':'Login Success','id':user.id,'email':user.email,'name':user.name,'is_patient':user.is_patient,'is_doctor':user.is_doctor}, status=status.HTTP_200_OK)
     else:
       return Response({'errors':{'non_field_errors':['Email or Password is not Valid']}}, status=status.HTTP_404_NOT_FOUND)
-
 
 class DoctorProfileView(APIView):
   renderer_classes = [UserRenderer]
@@ -56,11 +51,15 @@ class DoctorProfileView(APIView):
     if id is not None:
       doctor=Doctor.objects.select_related('user').get(user=id)
       serializer=DoctorProfileSerializer(doctor)
-      return Response({"data":serializer.data,"msg":"Successful"}, status=status.HTTP_201_CREATED)
+      return Response({"data":serializer.data,"msg":"Successful"}, status=status.HTTP_200_OK)
 
-    doctor=Doctor.objects.select_related('user').all()
-    serializer=DoctorProfileSerializer(doctor,many=True)
-    return Response({'data':serializer.data,'msg':'Successful'}, status=status.HTTP_201_CREATED)
+    doctors=Doctor.objects.select_related('user').all()
+
+    paginator = StandardResultsSetPagination()
+    paginated_doctors = paginator.paginate_queryset(doctors,request,view=self)
+
+    serializer=DoctorProfileSerializer(paginated_doctors,many=True)
+    return Response({'count': paginator.page.paginator.count,'next': paginator.get_next_link(),'previous': paginator.get_previous_link(),'page_size': paginator.page.paginator.per_page,'data':serializer.data,'msg':'Successful'}, status=status.HTTP_200_OK)
 
   def post(self, request, format=None):
     try:
@@ -77,31 +76,28 @@ class DoctorProfileView(APIView):
       serializer.save()
       return Response({'data':serializer.data,'msg':'Data Added Successful'}, status=status.HTTP_201_CREATED)
 
-
 class DoctorProfileSearchView(APIView):
   renderer_classes = [UserRenderer]
   permission_classes = [IsAuthenticated]
 
   def get(self,request,search_key,format=None):
     if search_key:
-      doctor=Doctor.objects.select_related('user').filter(Q(user__name__icontains=search_key) | Q(specialist__icontains=search_key)).distinct()
-      serializer=DoctorProfileSerializer(doctor,many=True)
-      return Response({"data":serializer.data,"msg":"Successful"}, status=status.HTTP_201_CREATED)
+      doctors=Doctor.objects.select_related('user').filter(Q(user__name__icontains=search_key) | Q(specialist__icontains=search_key)).distinct()
+    else:
+      doctors=Doctor.objects.select_related('user').all()
+    
+    paginator = StandardResultsSetPagination()
+    paginated_doctors = paginator.paginate_queryset(doctors,request,view=self)
 
-    doctor=Doctor.objects.select_related('user').all()
-    serializer=DoctorProfileSerializer(doctor,many=True)
-    return Response({'data':serializer.data,'msg':'Successful'}, status=status.HTTP_201_CREATED)
-
+    serializer=DoctorProfileSerializer(paginated_doctors,many=True)
+    return Response({'count': paginator.page.paginator.count,'next': paginator.get_next_link(),'previous': paginator.get_previous_link(),'page_size': paginator.page.paginator.per_page,'data':serializer.data,'msg':'Successful'}, status=status.HTTP_200_OK)
 
 class UserProfileView(APIView):
   renderer_classes = [UserRenderer]
   permission_classes = [IsAuthenticated]
   def get(self, request, format=None):
     serializer = UserProfileSerializer(request.user)
-    # print('serializer',serializer.data)
     return Response(serializer.data, status=status.HTTP_200_OK)
-
-
 
 class DoctorPatientAppointmentView(APIView):
   renderer_classes = [UserRenderer]
@@ -110,19 +106,21 @@ class DoctorPatientAppointmentView(APIView):
     id=pk
     user=User.objects.get(pk=id)
     if user.is_patient:
-      data=DoctorPatientAppointment.objects.filter(patient_email=user).order_by('-appointment_date')
+      appointments =DoctorPatientAppointment.objects.filter(patient_email=user).order_by('-appointment_date')
     else:
-      data=DoctorPatientAppointment.objects.filter(doctor_email=user).order_by('-appointment_date')
-    serializer=DoctorPatientAppointmentSerializer(data,many=True)
-    return Response({'data':serializer.data,'msg':'Appointment Data'}, status=status.HTTP_201_CREATED)
+      appointments =DoctorPatientAppointment.objects.filter(doctor_email=user).order_by('-appointment_date')
+    
+    paginator = StandardResultsSetPagination()
+    paginated_appointments  = paginator.paginate_queryset(appointments ,request,view=self)
+
+    serializer=DoctorPatientAppointmentSerializer(paginated_appointments,many=True)
+    return Response({'count': paginator.page.paginator.count,'next': paginator.get_next_link(),'previous': paginator.get_previous_link(),'page_size': paginator.page.paginator.per_page,'data':serializer.data,'msg':'Appointment Data'}, status=status.HTTP_200_OK)
 
   def post(self, request, format=None):
     serializer = DoctorPatientAppointmentSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
     return Response({'data':serializer.data,'msg':'Data Added Successful'}, status=status.HTTP_201_CREATED)
-
-
 
 class ReviewView(APIView):
   renderer_classes = [UserRenderer]
@@ -137,7 +135,6 @@ class ReviewView(APIView):
         return Response({'data':serializer.data,}, status=status.HTTP_201_CREATED)
       return Response({'errors':{'non_field_errors':['Your have no review yet']}}, status=status.HTTP_404_NOT_FOUND)
     return Response({'errors':{'non_field_errors':['Your are patient']}}, status=status.HTTP_404_NOT_FOUND)
-
 
   def post(self, request, format=None):
     serializer = ReviewSerializer(data=request.data)
@@ -158,10 +155,6 @@ class ReviewView(APIView):
 
       return Response({'data':serializer.data,'msg':'Review Added Successful'}, status=status.HTTP_201_CREATED)
     return Response({'errors':{'non_field_errors':['Your have not taken appointment to doctor']}}, status=status.HTTP_404_NOT_FOUND)
-
-
-
-
 
 class UserChangePasswordView(APIView):
   renderer_classes = [UserRenderer]

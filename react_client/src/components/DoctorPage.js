@@ -45,14 +45,3 @@ const DoctorPage = (props) => {
 }
 
 export default DoctorPage
-
-
-
-
-
-
-
-
-
-
-

@@ -7,13 +7,11 @@ import { useGetDoctorQuery } from '../services/userAuthApi';
 import { useSelector } from 'react-redux';
 import { useReviewInsertMutation } from '../services/userAuthApi';
 
-
-
 const RatingDoctor = () => {
 
     const { access_token } = getToken()
     let { id } = useParams()
-    const { data, isSuccess } = useGetDoctorQuery({ id, access_token })
+    const { data, isSuccess } = useGetDoctorQuery({ id })
     const user_data =useSelector(state=>state.user)
 
     const [value, setValue] = useState(0);
@@ -33,22 +31,16 @@ const RatingDoctor = () => {
             rating: data.get('rating'),
         }
 
-        const res = await reviewInsert({actualData,access_token});
+        const res = await reviewInsert({actualData});
         if (res.error){
             
           setServerError(res.error.data.errors)
         }
         if (res.data){
             setServerError({"msg":res.data.msg})
-            // console.log(props.revupd)
-            // console.log(props.rev)
-            // props.revupd([])
-            
 
         }
-        
     }
-    
 
     useEffect(() => {
         if (data && isSuccess) {

@@ -1,4 +1,5 @@
 import { Card, CardContent, CardMedia, Typography, Box, CssBaseline, Paper, Button, Rating, TextField, CircularProgress } from '@mui/material';
+import Pagination from '@mui/material/Pagination';
 import React, { useEffect, useState } from 'react'
 import BookingTemplate from './BookingTemplate';
 import { useParams } from 'react-router-dom';
@@ -9,8 +10,11 @@ import { useGetAppointmentQuery } from '../services/userAuthApi';
 const Booking = () => {
   let { id } = useParams()
   const { access_token } = getToken()
-  const { data, isSuccess } = useGetAppointmentQuery({ id, access_token })
+  const [page, setPage] = useState(1)
+  const { data, isSuccess } = useGetAppointmentQuery({id,page})
   const [arr, setArr] = useState([])
+
+  const totalPages = data ? Math.ceil(data.count / data.page_size): 0;
 
   useEffect(() => {
     if (data && isSuccess) {
@@ -34,9 +38,17 @@ const Booking = () => {
 
           </Box>
         </Paper>}
-
-
       </Box>
+
+      {totalPages > 1 && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, mb: 3 }}>
+            <Pagination
+                count={totalPages}
+                page={page}
+                onChange={(event, value) => setPage(value)}
+            />
+        </Box>
+      )}
 
     </>
   )

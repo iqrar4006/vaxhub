@@ -20,7 +20,6 @@ const DrawerComp = () => {
   let booking_url = `/booking/${id}`
   let doctor_review=`/doctorreview/${id}`
 
-
   const [openDrawer, setOpenDrawer] = React.useState(false);
 
   return (

@@ -7,6 +7,7 @@ import BloodtypeOutlinedIcon from '@mui/icons-material/BloodtypeOutlined';
 import VaccinesOutlinedIcon from '@mui/icons-material/VaccinesOutlined';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import Pagination from '@mui/material/Pagination';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import DoctorPage from '../components/DoctorPage'
@@ -14,26 +15,28 @@ import { getToken } from '../services/LocalStorageService';
 import { useGetAllDoctorQuery, useGetSearchDoctorQuery } from '../services/userAuthApi';
 import { useEffect, useState } from 'react';
 
-
 const Dashboard = () => {
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { access_token } = getToken()
   const [actualData, setActualData] = useState({})
-  const allDoctorQuery = useGetAllDoctorQuery(access_token)
-  const searchDoctorQuery = useGetSearchDoctorQuery({ search_key: actualData['search_key'], access_token: access_token })
+  const [page, setPage] = useState(1)
+  const allDoctorQuery = useGetAllDoctorQuery({page})
+  const searchDoctorQuery = useGetSearchDoctorQuery({ search_key: actualData['search_key'], page:page })
   const [arr, setArr] = useState([])
   const [boo, setBoo] = useState(true)
 
   const data = boo ? allDoctorQuery.data : searchDoctorQuery.data;
   const isSuccess = boo ? allDoctorQuery.isSuccess : searchDoctorQuery.isSuccess;
 
+  const totalPages = data ? Math.ceil(data.count / data.page_size) : 0;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const dat = new FormData(e.currentTarget);
     setActualData({ search_key: dat.get('search') })
+    setPage(1)
     setBoo(false)
   }
 
@@ -69,6 +72,14 @@ const Dashboard = () => {
     {arr.map(((el, i) => (
       <DoctorPage key={i} info={el} />
     )))}
+
+    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, mb: 3 }}>
+      <Pagination
+        count={totalPages}
+        page={page}
+        onChange={(event, value) => setPage(value)}
+      />
+    </Box>
 
   </>;
 };

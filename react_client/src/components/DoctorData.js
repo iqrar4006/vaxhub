@@ -28,10 +28,8 @@ const DoctorData = () => {
         data.append('avail_time_start',e.currentTarget.avail_time_start.value)
         data.append('avail_time_end',e.currentTarget.avail_time_end.value)
         data.append('about',e.currentTarget.about.value)
-
-
        
-        const res = await doctordata({ data,access_token });
+        const res = await doctordata({ data });
         if (res.error){
           setServerError(res.error.data.errors)
         }
@@ -39,9 +37,6 @@ const DoctorData = () => {
           document.getElementById('doctor-data').reset()
           setServerError({"msg":res.data.msg})
         }
-
-
-
     }
     return <>
         <CssBaseline />
