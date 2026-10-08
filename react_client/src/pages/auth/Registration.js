@@ -4,16 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { useRegisterUserMutation } from '../../services/userAuthApi';
 import { getToken, storeToken } from '../../services/LocalStorageService';
 import { setUserToken } from '../../features/authSlice';
+import { setUserInfo } from '../../features/userSlice';
 import { useDispatch } from 'react-redux';
 
 const Registration = () => {
-
-  // const [error, setError] = useState({
-  //   status: false,
-  //   msg: "",
-  //   type: ""
-  // })
-
 
   const [server_error,setServerError] = useState({});
 
@@ -42,11 +36,14 @@ const Registration = () => {
       storeToken(res.data.token)
       let {access_token}=getToken();
       dispatch(setUserToken({access_token:access_token}))
-      navigate('/profile')
+      dispatch(setUserInfo({id: res.data.id, email: res.data.email, name: res.data.name, is_patient: res.data.is_patient, is_doctor: res.data.is_doctor,}))
+      // navigate('/profile')
+      if (res.data.is_patient) {
+        navigate('/dashboard')
+      } else if (res.data.is_doctor) {
+        navigate(`/booking/${res.data.id}`)
+      }
     }
-
- 
-
   }
   return <>
     <Box component='form' noValidate sx={{ mt: 1 }} id='registration-form' onSubmit={handleSubmit}>

@@ -12,13 +12,12 @@ import { useDoctorAppointmentMutation, useGetDoctorQuery, useReviewRetrieveQuery
 import { getToken } from '../services/LocalStorageService';
 import { useSelector } from 'react-redux';
 
-
 const DoctorPersonalPage = () => {
 
     const { access_token } = getToken()
     let { id } = useParams()
-    const { data, isSuccess } = useGetDoctorQuery({ id, access_token })
-    const doctorReview = useReviewRetrieveQuery({ id, access_token })
+    const { data, isSuccess } = useGetDoctorQuery({ id })
+    const doctorReview = useReviewRetrieveQuery({ id })
     const user_data = useSelector(state => state.user)
     const [doctorAppointment] = useDoctorAppointmentMutation();
     // console.log('user',user_data.id)
@@ -31,7 +30,6 @@ const DoctorPersonalPage = () => {
     const [server_error, setServerError] = useState({});
     const navigate = useNavigate();
     const [reviw, setReviw] = useState([])
-
 
     const handleDateChange = (date) => {
         setFormData({
@@ -65,11 +63,9 @@ const DoctorPersonalPage = () => {
             appointment_time: formattedTime,
         }
 
-
-        const res = await doctorAppointment({ actualData, access_token });
+        const res = await doctorAppointment({ actualData });
         // console.log('res',res)
         if (res.error) {
-
             setServerError(res.error.data.errors)
         }
         if (res.data) {

@@ -12,9 +12,12 @@ import { useSelector } from "react-redux";
 import Booking from "./components/Booking";
 import DoctorData from "./components/DoctorData";
 import DoctorReview from "./components/DoctorReview";
+import { getToken } from './services/LocalStorageService'
+
 
 function App() {
   const {access_token}=useSelector(state=>state.auth)
+  // const { access_token } = getToken()
   const { is_patient,is_doctor } =useSelector(state=>state.user)
   // console.log('is_patient',is_patient)
   // let booking_url=`/booking/:${user_data['id']}`

@@ -1,12 +1,15 @@
 from django.urls import path
 from account.views import SendPasswordResetEmailView, UserChangePasswordView, UserLoginView, UserProfileView, UserRegistrationView, UserPasswordResetView,    DoctorProfileView,DoctorPatientAppointmentView,ReviewView,DoctorProfileSearchView
+from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
+
+    path('token/refresh/',TokenRefreshView.as_view(),name='token_refresh'),
+
     path('register/', UserRegistrationView.as_view(), name='register'),
     path('login/', UserLoginView.as_view(), name='login'),
     path('profile/', UserProfileView.as_view(), name='profile'),
 
-    
     path('doctor-data/',DoctorProfileView.as_view(),name='doctor-data'),
     path('doctor-data/<int:pk>/',DoctorProfileView.as_view(),name='doctor-data'),
     path('doctor-data-search/<search_key>/',DoctorProfileSearchView.as_view(),name='doctor-data-search'),
@@ -14,7 +17,6 @@ urlpatterns = [
     path('appointment/<int:pk>/',DoctorPatientAppointmentView.as_view(),name='appointment'),
     path('review/<int:pk>/',ReviewView.as_view(),name='review'),
     path('review/',ReviewView.as_view(),name='review'),
-
 
     path('changepassword/', UserChangePasswordView.as_view(), name='changepassword'),
     path('send-reset-password-email/', SendPasswordResetEmailView.as_view(), name='send-reset-password-email'),

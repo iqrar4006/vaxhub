@@ -1,10 +1,13 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { createApi } from '@reduxjs/toolkit/query/react'
+import baseQueryWithReauth from './baseQuery'
+
 
 // Define a service using a base URL and expected endpoints
 export const userAuthApi = createApi({
   reducerPath: 'userAuthApi',
+  baseQuery: baseQueryWithReauth,
 //   baseQuery: fetchBaseQuery({ baseUrl: 'http://127.0.0.1:8000/api/user/' }),
-  baseQuery: fetchBaseQuery({ baseUrl: '/api/user/' }),
+//   baseQuery: fetchBaseQuery({ baseUrl: '/api/user/' }),
   endpoints: (builder) => ({
     registerUser: builder.mutation({
         query: (user)=>{
@@ -31,127 +34,105 @@ export const userAuthApi = createApi({
       }
     }),
     getLoggedUser: builder.query({
-        query: (access_token)=>{
+        query: ()=>{
             return {
                 url:'profile/',
                 method:'GET',
-                headers: {
-                    'authorization': `Bearer ${access_token}`,
-                }
             }
         }
     }),
 
     getAllDoctor: builder.query({
-        query: (access_token)=>{
+        query: ({page}) => {
             return {
-                url:'doctor-data/',
-                method:'GET',
-                headers: {
-                    'authorization': `Bearer ${access_token}`,
-                }
+                url: `doctor-data/?page=${page}`,
+                method: 'GET',
             }
         }
     }),
+
     getDoctor: builder.query({
-        query: ({id,access_token})=>{
+        query: ({id})=>{
             return {
                 url:`doctor-data/${id}/`,
                 method:'GET',
-                headers: {
-                    'authorization': `Bearer ${access_token}`,
-                }
             }
         }
     }),
+
     getSearchDoctor: builder.query({
-        query: ({search_key,access_token})=>{
+        query: ({ search_key, page }) => {
             return {
-                url:`doctor-data-search/${search_key}/`,
-                method:'GET',
-                headers: {
-                    'authorization': `Bearer ${access_token}`,
-                }
+                url: `doctor-data-search/${search_key}/?page=${page}`,
+                method: 'GET',
             }
         }
     }),
+
     doctordata: builder.mutation({
-        query: ({data,access_token})=>{
+        query: ({data})=>{
             return {
                 url:'doctor-data/',
                 method:'POST',
                 body: data,
-                headers: {
-                    
-                    'authorization': `Bearer ${access_token}`,
-                }
             }
         },
     }),
+
     doctorAppointment: builder.mutation({
-        query: ({actualData,access_token})=>{
+        query: ({actualData})=>{
             return {
                 url:'appointment/',
                 method:'POST',
                 body: actualData,
                 headers: {
                     'Content-type': 'application/json',
-                    'authorization': `Bearer ${access_token}`,
                 }
             }
         },
         invalidatesTags: ['Appointment'],
     }),
+
     getAppointment: builder.query({
-        query: ({id,access_token})=>{
+        query: ({id, page}) => {
             return {
-                url:`appointment/${id}/`,
-                method:'GET',
-                headers: {
-                    'authorization': `Bearer ${access_token}`,
-                }
+                url: `appointment/${id}/?page=${page}`,
+                method: 'GET',
             }
         },
         providesTags: ['Appointment'],
     }),
     reviewInsert: builder.mutation({
-        query: ({actualData,access_token})=>{
+        query: ({actualData})=>{
             return {
                 url:'review/',
                 method:'POST',
                 body: actualData,
                 headers: {
                     'Content-type': 'application/json',
-                    'authorization': `Bearer ${access_token}`,
                 }
             }
         },
         invalidatesTags: ['Review'],
     }),
     reviewRetrieve: builder.query({
-        query: ({id,access_token})=>{
+        query: ({id})=>{
             return {
                 url:`review/${id}/`,
                 method:'GET',
-                headers: {
-                    'authorization': `Bearer ${access_token}`,
-                }
             }
         },
         providesTags: ['Review'],
     }),
 
-    
-
     changeUserPassword: builder.mutation({
-        query: ({actualData, access_token})=>{
+        query: ({actualData})=>{
             return {
                 url:'changepassword/',
                 method:'POST',
                 body: actualData,
                 headers: {
                     'Content-type': 'application/json',
-                    'authorization': `Bearer ${access_token}`,
                 }
             }
         }

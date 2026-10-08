@@ -5,11 +5,6 @@ import { getToken } from '../../services/LocalStorageService';
 import { useChangeUserPasswordMutation } from '../../services/userAuthApi';
 
 const ChangePassword = () => {
-  // const [error, setError] = useState({
-  //   status: false,
-  //   msg: "",
-  //   type: ""
-  // });
 
   const [server_error,setServerError] =useState({})
   const [server_msg,setServerMsg] =useState({})
@@ -24,30 +19,16 @@ const ChangePassword = () => {
       password2: data.get('password2'),
     }
 
-    const res=await changeUserPassword({actualData,access_token})
+    const res=await changeUserPassword({actualData})
     if (res.error){
       setServerError(res.error.data.errors)
       setServerMsg({})
-      // console.log(server_error)
     }
     if (res.data){
-      // console.log(res)
       setServerMsg(res.data)
       setServerError({})
       document.getElementById("password-change-form").reset();
     }
-    // if (actualData.password && actualData.password2) {
-    //   if (actualData.password === actualData.password2) {
-    //     console.log(actualData);
-    //     document.getElementById("password-change-form").reset();
-    //     setError({ status: true, msg: "Password Changed Successful", type: "success" });
-    //   } else {
-    //     setError({ status: true, msg: "Password and Confirm Password Doesn't Match", type: "error" })
-    //   }
-    // } else {
-    //   setError({ status: true, msg: "All Fields are Required", type: "error" })
-    // }
-
   };
   
   const myData = useSelector(state=>state.user)

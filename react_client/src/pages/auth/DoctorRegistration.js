@@ -2,16 +2,18 @@ import { TextField, FormControlLabel, Checkbox, Button, Box, Alert, Typography }
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRegisterUserMutation } from '../../services/userAuthApi';
-import { storeToken } from '../../services/LocalStorageService';
+import { getToken, storeToken } from '../../services/LocalStorageService';
+import { setUserToken } from '../../features/authSlice';
+import { setUserInfo } from '../../features/userSlice';
+import { useDispatch } from 'react-redux';
 
 const DoctorRegistration = () => {
-
-
 
   const [server_error,setServerError] = useState({});
 
   const navigate = useNavigate();
   const [registerUser, { isLoading }] = useRegisterUserMutation();
+  const dispatch=useDispatch();
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
@@ -33,10 +35,12 @@ const DoctorRegistration = () => {
     if (res.data){
       document.getElementById('registration-form').reset()
       storeToken(res.data.token)
-      navigate('/profile')
+      let {access_token}=getToken();
+      dispatch(setUserToken({access_token:access_token}))
+      dispatch(setUserInfo({id: res.data.id, email: res.data.email, name: res.data.name, is_patient: res.data.is_patient, is_doctor: res.data.is_doctor,}))
+      navigate(`/booking/${res.data.id}`)
+      // navigate('/profile')
     }
-
-
   }
   return <>
     <Box component='form' noValidate sx={{ mt: 1 }} id='registration-form' onSubmit={handleSubmit}>
